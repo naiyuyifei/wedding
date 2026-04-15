@@ -320,6 +320,7 @@
 
         el.messageForm.reset();
         el.formHint.textContent = "留言已发送，感谢你的祝福。";
+        el.submitBtn.disabled = false;
       })
       .catch(function (err) {
         el.formHint.textContent = (err && err.message) || "提交失败，请稍后再试。";
@@ -384,8 +385,11 @@
 
     const ua = navigator.userAgent || "";
     const isWeChat = /MicroMessenger/i.test(ua);
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(ua);
+    const wrap = el.mapPreview.closest(".map-preview-wrap");
 
     const showFallback = function (note) {
+      if (wrap) wrap.classList.add("fallback-mode");
       el.mapFallback.classList.remove("hidden");
       const noteEl = el.mapFallback.querySelector(".map-fallback-note");
       if (noteEl && note) {
@@ -395,9 +399,12 @@
       }
     };
 
-    if (isWeChat) {
-      el.mapPreview.classList.add("hidden");
-      showFallback("微信内置浏览器对地图预览支持较弱，请点下方按钮直接打开高德或百度导航。");
+    if (isWeChat || isMobile) {
+      showFallback(
+        isWeChat
+          ? "微信内置浏览器对地图预览支持较弱，请点下方按钮直接打开高德或百度导航。"
+          : "手机端地图内嵌预览兼容性较差，请点下方按钮直接打开高德或百度导航。"
+      );
       return;
     }
 

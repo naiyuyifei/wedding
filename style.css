@@ -483,6 +483,10 @@ body {
   border-radius: 14px;
   overflow: hidden;
   min-height: 280px;
+  background:
+    radial-gradient(80% 120% at 18% 20%, rgba(67, 54, 32, 0.72), transparent 65%),
+    radial-gradient(100% 120% at 84% 76%, rgba(44, 50, 63, 0.7), transparent 65%),
+    linear-gradient(135deg, rgba(16, 14, 12, 0.9), rgba(12, 10, 8, 0.92));
 }
 
 .map-preview-wrap iframe {
@@ -531,9 +535,31 @@ body {
   color: var(--ink-soft);
 }
 
+.map-preview-wrap.fallback-mode iframe,
+.map-preview-wrap.fallback-mode .map-star-marker,
+.map-preview-wrap.fallback-mode .map-star-label {
+  display: none;
+}
+
 .map-fallback-note {
   max-width: 30rem;
   line-height: 1.5;
+  margin: 0;
+}
+
+.map-fallback-card {
+  max-width: 34rem;
+  border-radius: 14px;
+  border: 1px solid rgba(243, 207, 150, 0.28);
+  background: rgba(18, 14, 11, 0.7);
+  padding: 1rem 1.1rem;
+}
+
+.map-fallback-title {
+  margin: 0 0 0.5rem;
+  color: var(--gold-strong);
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .map-actions {
