@@ -489,6 +489,11 @@
   }
 
   function init() {
+    const ua = navigator.userAgent || "";
+    if (/MicroMessenger/i.test(ua)) {
+      document.documentElement.classList.add("is-wechat");
+    }
+
     updateCountdown();
     setInterval(updateCountdown, 1000);
 

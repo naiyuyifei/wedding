@@ -775,6 +775,10 @@ body {
     background-position: 42% center;
   }
 
+  .is-wechat .cinema-bg {
+    background-position: 50% center;
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
   }
@@ -800,6 +804,10 @@ body {
 @media (max-width: 680px) {
   .cinema-bg {
     background-position: 36% center;
+  }
+
+  .is-wechat .cinema-bg {
+    background-position: 46% center;
   }
 
   .page {
