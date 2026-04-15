@@ -496,6 +496,10 @@ body {
   background: #1a1612;
 }
 
+.map-static-preview-wrap {
+  display: block;
+}
+
 .map-static-preview {
   width: 100%;
   height: 320px;
@@ -548,6 +552,7 @@ body {
   display: none;
 }
 
+.map-preview-wrap.fallback-mode .map-static-preview-wrap,
 .map-preview-wrap.fallback-mode .map-static-preview {
   display: block !important;
 }

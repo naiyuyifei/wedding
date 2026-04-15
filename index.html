@@ -122,13 +122,16 @@
         <p class="addr">青岛黄岛区石灿酒店 · 黄岛区团结路2528号</p>
 
         <div class="map-preview-wrap">
-          <img
-            id="mapStaticPreview"
-            class="map-static-preview hidden"
-            src="./assets/optimized/map_preview.webp"
-            alt="石灿酒店地图预览"
-            loading="lazy"
-          />
+          <picture id="mapStaticPreviewWrap" class="map-static-preview-wrap hidden">
+            <source srcset="./assets/optimized/map_preview.webp" type="image/webp" />
+            <img
+              id="mapStaticPreview"
+              class="map-static-preview"
+              src="./assets/optimized/map_preview.jpg"
+              alt="石灿酒店地图预览"
+              loading="lazy"
+            />
+          </picture>
           <iframe
             id="mapPreview"
             title="石灿酒店地图预览"

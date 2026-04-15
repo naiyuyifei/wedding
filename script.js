@@ -31,6 +31,7 @@
     musicText: document.getElementById("musicText"),
     musicFallbackBtn: document.getElementById("musicFallbackBtn"),
     mapPreview: document.getElementById("mapPreview"),
+    mapStaticPreviewWrap: document.getElementById("mapStaticPreviewWrap"),
     mapStaticPreview: document.getElementById("mapStaticPreview"),
     mapFallback: document.getElementById("mapFallback"),
     bg: document.querySelector(".cinema-bg")
@@ -388,10 +389,50 @@
     const isWeChat = /MicroMessenger/i.test(ua);
     const isMobile = /Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(ua);
     const wrap = el.mapPreview.closest(".map-preview-wrap");
+    const mapWebp = "./assets/optimized/map_preview.webp";
+    const mapJpg = "./assets/optimized/map_preview.jpg";
+
+    const ensureStaticPreview = function () {
+      if (!wrap) return null;
+
+      if (!el.mapStaticPreviewWrap || !el.mapStaticPreview) {
+        const picture = document.createElement("picture");
+        picture.id = "mapStaticPreviewWrap";
+        picture.className = "map-static-preview-wrap hidden";
+
+        const source = document.createElement("source");
+        source.srcset = mapWebp;
+        source.type = "image/webp";
+
+        const image = document.createElement("img");
+        image.id = "mapStaticPreview";
+        image.className = "map-static-preview";
+        image.src = mapJpg;
+        image.alt = "石灿酒店地图预览";
+        image.loading = "lazy";
+
+        picture.appendChild(source);
+        picture.appendChild(image);
+        wrap.insertBefore(picture, wrap.firstChild);
+
+        el.mapStaticPreviewWrap = picture;
+        el.mapStaticPreview = image;
+      }
+
+      if (el.mapStaticPreview) {
+        el.mapStaticPreview.onerror = function () {
+          this.onerror = null;
+          this.src = mapJpg;
+        };
+      }
+
+      return el.mapStaticPreviewWrap;
+    };
 
     const showFallback = function (note) {
+      const staticWrap = ensureStaticPreview();
       if (wrap) wrap.classList.add("fallback-mode");
-      if (el.mapStaticPreview) el.mapStaticPreview.classList.remove("hidden");
+      if (staticWrap) staticWrap.classList.remove("hidden");
       el.mapFallback.classList.remove("hidden");
       const noteEl = el.mapFallback.querySelector(".map-fallback-note");
       if (noteEl && note) {
