@@ -39,7 +39,13 @@ python3 -m http.server 8080
    - `MAIL_TO`（可选，默认 `nerdfny@163.com`）
 5. 重新部署后，通过页面提交留言进行验证。
 
-## 留言接口
+## GitHub Pages 留言说明（不存库）
+
+- 在 GitHub Pages 域名下，前端会优先调用 `formsubmit.co` 将留言直接转发到 `nerdfny@163.com`。
+- 若自动发送失败，会自动降级为 `mailto`（调用宾客邮箱客户端发送）。
+- 首次使用 `formsubmit.co` 时会向 `nerdfny@163.com` 发送激活确认邮件，请先点击确认链接完成激活。
+
+## 留言接口（EdgeOne）
 
 - `POST /api/messages`
 

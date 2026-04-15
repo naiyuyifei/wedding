@@ -34,6 +34,9 @@
     mapFallback: document.getElementById("mapFallback"),
     bg: document.querySelector(".cinema-bg")
   };
+  let filmTicker = null;
+  let filmFallbackTimer = null;
+  const isGitHubPages = /(^|\.)github\.io$/i.test(window.location.hostname || "");
 
   function pad(num) {
     return String(num).padStart(2, "0");
@@ -86,6 +89,109 @@
     el.filmTrack.appendChild(frag);
   }
 
+  function waitForTrackImages() {
+    return new Promise(function (resolve) {
+      const imgs = el.filmTrack.querySelectorAll("img");
+      if (!imgs.length) {
+        resolve();
+        return;
+      }
+
+      let done = 0;
+      const finish = function () {
+        done += 1;
+        if (done >= imgs.length) resolve();
+      };
+
+      imgs.forEach(function (img) {
+        if (img.complete) {
+          finish();
+          return;
+        }
+        img.addEventListener("load", finish, { once: true });
+        img.addEventListener("error", finish, { once: true });
+      });
+
+      setTimeout(resolve, 2400);
+    });
+  }
+
+  function startFilmMarquee() {
+    if (!el.filmTrack) return;
+
+    let offset = 0;
+    let lastTs = 0;
+    let halfWidth = 1;
+
+    const recalc = function () {
+      halfWidth = Math.max(1, el.filmTrack.scrollWidth / 2);
+      if (-offset > halfWidth) offset = 0;
+    };
+
+    const tick = function (ts) {
+      if (!lastTs) lastTs = ts;
+      const delta = Math.min(48, ts - lastTs);
+      lastTs = ts;
+
+      if (!document.hidden) {
+        const speed = window.innerWidth < 768 ? 0.032 : 0.046;
+        offset -= delta * speed;
+        if (-offset >= halfWidth) {
+          offset += halfWidth;
+        }
+        el.filmTrack.style.transform = "translate3d(" + offset + "px, 0, 0)";
+      }
+
+      filmTicker = window.requestAnimationFrame(tick);
+    };
+
+    waitForTrackImages().then(function () {
+      el.filmTrack.style.animation = "none";
+      recalc();
+      window.addEventListener("resize", recalc, { passive: true });
+
+      if (window.requestAnimationFrame) {
+        filmTicker = window.requestAnimationFrame(tick);
+      } else {
+        filmFallbackTimer = setInterval(function () {
+          offset -= 0.7;
+          if (-offset >= halfWidth) {
+            offset += halfWidth;
+          }
+          el.filmTrack.style.transform = "translate3d(" + offset + "px, 0, 0)";
+        }, 16);
+      }
+    });
+  }
+
+  function preloadImage(url) {
+    return new Promise(function (resolve) {
+      const img = new Image();
+      img.onload = function () {
+        resolve(true);
+      };
+      img.onerror = function () {
+        resolve(false);
+      };
+      img.src = url;
+    });
+  }
+
+  function swapImageSmooth(node, url, alt) {
+    if (!node) return;
+    if (node.getAttribute("data-current") === url) return;
+
+    preloadImage(url).then(function () {
+      node.classList.add("is-fading");
+      setTimeout(function () {
+        node.src = url;
+        node.alt = alt;
+        node.setAttribute("data-current", url);
+        node.classList.remove("is-fading");
+      }, 210);
+    });
+  }
+
   function setPortraitActive(index) {
     const name = portraitImages[index];
     if (!name) return;
@@ -93,10 +199,8 @@
     const mainUrl = "./assets/optimized/" + name + ".webp";
     const secondaryUrl = "./assets/optimized/" + nextName + ".webp";
 
-    el.portraitMain.src = mainUrl;
-    el.portraitMain.alt = "竖版影像 " + name;
-    el.portraitSecondary.src = secondaryUrl;
-    el.portraitSecondary.alt = "下一张影像 " + nextName;
+    swapImageSmooth(el.portraitMain, mainUrl, "竖版影像 " + name);
+    swapImageSmooth(el.portraitSecondary, secondaryUrl, "下一张影像 " + nextName);
     el.portraitFrame.style.setProperty("--portrait-main-bg", "url('" + mainUrl + "')");
     el.portraitSecondaryFrame.style.setProperty("--portrait-secondary-bg", "url('" + secondaryUrl + "')");
 
@@ -125,7 +229,7 @@
     el.portraitDots.appendChild(frag);
   }
 
-  async function submitMessage(event) {
+  function submitMessage(event) {
     event.preventDefault();
 
     const guestName = (document.getElementById("guestName").value || "").trim();
@@ -136,65 +240,132 @@
       return;
     }
 
-    el.submitBtn.disabled = true;
+    if (isGitHubPages) {
+      el.submitBtn.disabled = true;
       el.formHint.textContent = "正在发送...";
 
-    try {
-      const res = await fetch("/api/messages", {
+      const payload = {
+        name: guestName || "匿名来宾",
+        message: impression,
+        _subject: "婚礼留言 - " + (guestName || "匿名来宾"),
+        _template: "table",
+        _captcha: "false"
+      };
+
+      fetch("https://formsubmit.co/ajax/nerdfny@163.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("邮件服务暂时不可用");
+          return res.json().catch(function () {
+            return {};
+          });
+        })
+        .then(function () {
+          el.messageForm.reset();
+          el.formHint.textContent = "留言已发送到新人邮箱，感谢你的祝福。";
+          el.submitBtn.disabled = false;
+        })
+        .catch(function () {
+          const subject = encodeURIComponent("婚礼留言 - " + (guestName || "匿名来宾"));
+          const body = encodeURIComponent(
+            "姓名: " +
+              (guestName || "匿名来宾") +
+              "\n留言: " +
+              impression +
+              "\n时间: " +
+              new Date().toLocaleString("zh-CN", { hour12: false })
+          );
+          window.location.href = "mailto:nerdfny@163.com?subject=" + subject + "&body=" + body;
+          el.formHint.textContent = "自动发送失败，已调用邮箱客户端发送。";
+          el.submitBtn.disabled = false;
+        });
+      return;
+    }
+
+    el.submitBtn.disabled = true;
+    el.formHint.textContent = "正在发送...";
+
+    fetch("./api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ guestName, impression })
+      })
+      .then(function (res) {
+        const contentType = (res.headers && res.headers.get("content-type")) || "";
+        if (contentType.indexOf("application/json") > -1) {
+          return res.json().then(function (data) {
+            return { res: res, data: data };
+          });
+        }
+        return res.text().then(function (raw) {
+          return { res: res, data: { raw: raw } };
+        });
+      })
+      .then(function (result) {
+        const res = result.res;
+        const data = result.data || {};
+
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 405) {
+            throw new Error("留言接口未生效，请在 EdgeOne 启用 Edge Functions 并重新部署。");
+          }
+          throw new Error(data.error || "提交失败，请稍后再试");
+        }
+
+        el.messageForm.reset();
+        el.formHint.textContent = "留言已发送，感谢你的祝福。";
+      })
+      .catch(function (err) {
+        el.formHint.textContent = (err && err.message) || "提交失败，请稍后再试。";
+        el.submitBtn.disabled = false;
       });
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error || "提交失败，请稍后再试");
-      }
-
-      el.messageForm.reset();
-      el.formHint.textContent = "留言已发送，感谢你的祝福。";
-    } catch (err) {
-      el.formHint.textContent = err.message || "提交失败，请稍后再试。";
-    } finally {
-      el.submitBtn.disabled = false;
-    }
   }
 
-  async function startMusic(showFallbackOnFail) {
+  function startMusic(showFallbackOnFail) {
     const shouldShowFallback = showFallbackOnFail !== false;
-    try {
-      el.music.muted = false;
-      await el.music.play();
-      el.musicDock.classList.add("playing");
-      el.musicText.textContent = "音乐：播放中";
-      el.musicFallbackBtn.classList.add("hidden");
-      return true;
-    } catch (err) {
-      el.musicDock.classList.remove("playing");
-      el.musicText.textContent = "音乐：待开启";
-      if (shouldShowFallback) {
-        el.musicFallbackBtn.classList.remove("hidden");
-      }
-      return false;
-    }
+    el.music.muted = false;
+    return el.music
+      .play()
+      .then(function () {
+        el.musicDock.classList.add("playing");
+        el.musicText.textContent = "音乐：播放中";
+        el.musicFallbackBtn.classList.add("hidden");
+        return true;
+      })
+      .catch(function () {
+        el.musicDock.classList.remove("playing");
+        el.musicText.textContent = "音乐：待开启";
+        if (shouldShowFallback) {
+          el.musicFallbackBtn.classList.remove("hidden");
+        }
+        return false;
+      });
   }
 
-  async function forceAutoPlay() {
-    const direct = await startMusic(false);
-    if (direct) return true;
-
-    try {
+  function forceAutoPlay() {
+    return startMusic(false).then(function (direct) {
+      if (direct) return true;
       el.music.muted = true;
-      await el.music.play();
-      el.music.muted = false;
-      el.musicDock.classList.add("playing");
-      el.musicText.textContent = "音乐：播放中";
-      el.musicFallbackBtn.classList.add("hidden");
-      return true;
-    } catch (err) {
-      el.music.muted = false;
-      return false;
-    }
+      return el.music
+        .play()
+        .then(function () {
+          el.music.muted = false;
+          el.musicDock.classList.add("playing");
+          el.musicText.textContent = "音乐：播放中";
+          el.musicFallbackBtn.classList.add("hidden");
+          return true;
+        })
+        .catch(function () {
+          el.music.muted = false;
+          return false;
+        });
+    });
   }
 
   function toggleMusic() {
@@ -209,6 +380,27 @@
   }
 
   function initMapFallback() {
+    if (!el.mapPreview || !el.mapFallback) return;
+
+    const ua = navigator.userAgent || "";
+    const isWeChat = /MicroMessenger/i.test(ua);
+
+    const showFallback = function (note) {
+      el.mapFallback.classList.remove("hidden");
+      const noteEl = el.mapFallback.querySelector(".map-fallback-note");
+      if (noteEl && note) {
+        noteEl.textContent = note;
+      } else if (note) {
+        el.mapFallback.textContent = note;
+      }
+    };
+
+    if (isWeChat) {
+      el.mapPreview.classList.add("hidden");
+      showFallback("微信内置浏览器对地图预览支持较弱，请点下方按钮直接打开高德或百度导航。");
+      return;
+    }
+
     let loaded = false;
 
     el.mapPreview.addEventListener("load", function () {
@@ -218,9 +410,9 @@
 
     setTimeout(function () {
       if (!loaded) {
-        el.mapFallback.classList.remove("hidden");
+        showFallback("地图预览加载失败，请使用下方按钮直接打开地图导航。");
       }
-    }, 5000);
+    }, 3800);
   }
 
   function initParallax() {
@@ -242,7 +434,7 @@
     setInterval(function () {
       activePortraitIndex = (activePortraitIndex + 1) % portraitImages.length;
       setPortraitActive(activePortraitIndex);
-    }, 5000);
+    }, 5800);
   }
 
   function init() {
@@ -250,6 +442,7 @@
     setInterval(updateCountdown, 1000);
 
     createFilmFrames();
+    startFilmMarquee();
     initPortraitDots();
     setPortraitActive(0);
     startPortraitLoop();
@@ -277,6 +470,7 @@
     });
     document.addEventListener("WeixinJSBridgeReady", tryAutoMusic, false);
     document.addEventListener("YixinJSBridgeReady", tryAutoMusic, false);
+    document.addEventListener("touchstart", tryAutoMusic, { passive: true });
 
     document.addEventListener(
       "pointerdown",
@@ -290,6 +484,10 @@
 
     el.musicDock.addEventListener("click", toggleMusic);
     el.musicFallbackBtn.addEventListener("click", startMusic);
+
+    if (isGitHubPages) {
+      el.formHint.textContent = "当前为 GitHub Pages，留言会优先自动发送到新人邮箱。";
+    }
 
     initMapFallback();
     initParallax();
