@@ -492,10 +492,6 @@
     el.musicDock.addEventListener("click", toggleMusic);
     el.musicFallbackBtn.addEventListener("click", startMusic);
 
-    if (isGitHubPages) {
-      el.formHint.textContent = "当前为 GitHub Pages，留言会优先自动发送到新人邮箱。";
-    }
-
     initMapFallback();
     initParallax();
   }
