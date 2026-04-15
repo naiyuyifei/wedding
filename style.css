@@ -750,6 +750,10 @@ body {
 }
 
 @media (max-width: 900px) {
+  .cinema-bg {
+    background-position: 42% center;
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
   }
@@ -773,6 +777,10 @@ body {
 }
 
 @media (max-width: 680px) {
+  .cinema-bg {
+    background-position: 36% center;
+  }
+
   .page {
     width: calc(100% - 1rem);
     margin: 0.65rem auto;
