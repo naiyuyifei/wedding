@@ -490,8 +490,16 @@
 
   function init() {
     const ua = navigator.userAgent || "";
-    if (/MicroMessenger/i.test(ua)) {
+    const isWeChatUA = /MicroMessenger/i.test(ua);
+    if (isWeChatUA) {
       document.documentElement.classList.add("is-wechat");
+      const applyWechatBgFocus = function () {
+        if (!el.bg) return;
+        const x = window.innerWidth <= 680 ? "74%" : "66%";
+        el.bg.style.backgroundPosition = x + " center";
+      };
+      applyWechatBgFocus();
+      window.addEventListener("resize", applyWechatBgFocus, { passive: true });
     }
 
     updateCountdown();
