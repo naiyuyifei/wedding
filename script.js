@@ -31,6 +31,7 @@
     musicText: document.getElementById("musicText"),
     musicFallbackBtn: document.getElementById("musicFallbackBtn"),
     mapPreview: document.getElementById("mapPreview"),
+    mapStaticPreview: document.getElementById("mapStaticPreview"),
     mapFallback: document.getElementById("mapFallback"),
     bg: document.querySelector(".cinema-bg")
   };
@@ -390,6 +391,7 @@
 
     const showFallback = function (note) {
       if (wrap) wrap.classList.add("fallback-mode");
+      if (el.mapStaticPreview) el.mapStaticPreview.classList.remove("hidden");
       el.mapFallback.classList.remove("hidden");
       const noteEl = el.mapFallback.querySelector(".map-fallback-note");
       if (noteEl && note) {
@@ -402,8 +404,8 @@
     if (isWeChat || isMobile) {
       showFallback(
         isWeChat
-          ? "微信内置浏览器对地图预览支持较弱，请点下方按钮直接打开高德或百度导航。"
-          : "手机端地图内嵌预览兼容性较差，请点下方按钮直接打开高德或百度导航。"
+          ? "已切换为微信兼容地图预览，点击下方按钮可一键打开高德或百度导航。"
+          : "已切换为手机兼容地图预览，点击下方按钮可一键打开高德或百度导航。"
       );
       return;
     }
