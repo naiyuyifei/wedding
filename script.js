@@ -435,19 +435,20 @@
       if (staticWrap) staticWrap.classList.remove("hidden");
       el.mapFallback.classList.remove("hidden");
       const noteEl = el.mapFallback.querySelector(".map-fallback-note");
-      if (noteEl && note) {
-        noteEl.textContent = note;
+      if (noteEl) {
+        if (note) {
+          noteEl.textContent = note;
+          noteEl.classList.remove("hidden");
+        } else {
+          noteEl.classList.add("hidden");
+        }
       } else if (note) {
         el.mapFallback.textContent = note;
       }
     };
 
     if (isWeChat || isMobile) {
-      showFallback(
-        isWeChat
-          ? "已切换为微信兼容地图预览，点击下方按钮可一键打开高德或百度导航。"
-          : "已切换为手机兼容地图预览，点击下方按钮可一键打开高德或百度导航。"
-      );
+      showFallback("");
       return;
     }
 
