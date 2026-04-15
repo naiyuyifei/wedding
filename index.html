@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>房乃玉 & 郑一斐 · 婚礼邀请函</title>
+    <meta
+      name="description"
+      content="诚邀您参加房乃玉与郑一斐的婚礼，时间：2026年5月24日，地点：青岛黄岛区石灿酒店（黄岛区团结路2528号）。"
+    />
+    <meta property="og:title" content="房乃玉 & 郑一斐 · 婚礼邀请函" />
+    <meta
+      property="og:description"
+      content="2026年5月24日 | 青岛黄岛区石灿酒店，诚邀您共同见证我们的幸福时刻。"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="preload" as="image" href="./assets/optimized/scene_04_03.webp" />
+    <link rel="preload" as="image" href="./assets/optimized/film1.webp" />
+    <link rel="preload" as="image" href="./assets/optimized/SBM_8521.webp" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="cinema-bg" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <audio
+      id="bgMusic"
+      src="./结婚.mp3"
+      preload="auto"
+      loop
+      autoplay
+      playsinline
+      webkit-playsinline="true"
+      x5-playsinline="true"
+    ></audio>
+
+    <button id="musicFallbackBtn" class="music-fallback hidden" type="button">点击开启背景音乐</button>
+
+    <button id="musicDock" class="music-dock" type="button" aria-label="音乐控制">
+      <span class="music-dot" aria-hidden="true"></span>
+      <span id="musicText">音乐：加载中</span>
+    </button>
+
+    <main class="page">
+      <section class="hero reveal" id="top">
+        <p class="eyebrow">Wedding Cinema Invitation</p>
+        <h1>房乃玉 <span>&</span> 郑一斐</h1>
+        <p class="date">2026.05.24</p>
+        <p class="hero-line">我们将踏入人生下一段旅程，诚邀您到场见证。</p>
+        <div class="hero-actions">
+          <a class="btn" href="#details">婚礼信息</a>
+          <a class="btn ghost" href="#message-wall">留言祝福</a>
+        </div>
+      </section>
+
+      <section class="film-strip reveal" aria-label="电影胶片回放">
+        <header>
+          <h2>我们是彼此100% 确认的人</h2>
+        </header>
+        <div class="film-track-wrap">
+          <div class="film-track" id="filmTrack"></div>
+        </div>
+      </section>
+
+      <section class="portrait-stage reveal" aria-label="竖版影像展映">
+        <header>
+          <h2>爱是目标100% 持续优化的课题</h2>
+        </header>
+        <div class="portrait-shell">
+          <div class="portrait-frame">
+            <img
+              id="portraitMain"
+              src="./assets/optimized/SBM_8521.webp"
+              alt="婚礼竖版照片"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+          <div class="portrait-side">
+            <div class="portrait-secondary-frame">
+              <img id="portraitSecondary" src="./assets/optimized/SBM_8465.webp" alt="下一张影像预告" />
+            </div>
+            <div class="portrait-dots" id="portraitDots" aria-label="竖版影像切换"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="info-grid reveal" id="details">
+        <article class="card">
+          <h3>婚礼信息</h3>
+          <ul>
+            <li><span>新郎新娘</span><strong>房乃玉 / 郑一斐</strong></li>
+            <li><span>婚礼日期</span><strong>2026年5月24日（周日）</strong></li>
+            <li><span>婚礼地点</span><strong>青岛黄岛区石灿酒店</strong></li>
+            <li><span>详细地址</span><strong>黄岛区团结路2528号</strong></li>
+          </ul>
+        </article>
+
+        <article class="card schedule">
+          <h3>婚礼流程</h3>
+          <ol>
+            <li><time>11:00</time><span>宾客合影</span></li>
+            <li><time>11:28</time><span>婚礼仪式</span></li>
+            <li><time>11:58</time><span>婚礼午宴</span></li>
+          </ol>
+        </article>
+      </section>
+
+      <section class="card countdown-card reveal" aria-live="polite">
+        <h3>婚礼倒计时</h3>
+        <div class="timer">
+          <div><strong id="days">--</strong><span>天</span></div>
+          <div><strong id="hours">--</strong><span>时</span></div>
+          <div><strong id="minutes">--</strong><span>分</span></div>
+          <div><strong id="seconds">--</strong><span>秒</span></div>
+        </div>
+      </section>
+
+      <section class="card map reveal" id="map-section">
+        <h3>导航与地图</h3>
+        <p class="addr">青岛黄岛区石灿酒店 · 黄岛区团结路2528号</p>
+
+        <div class="map-preview-wrap">
+          <iframe
+            id="mapPreview"
+            title="石灿酒店地图预览"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://map.baidu.com/?latlng=36.062333,120.141489&title=%E9%9D%92%E5%B2%9B%E7%9F%B3%E7%81%BF%E9%85%92%E5%BA%97%20%E5%B8%8C%E5%B0%94%E9%A1%BF%E6%A0%BC%E8%8A%AE%E7%B2%BE%E9%80%89&content=%E9%BB%84%E5%B2%9B%E5%8C%BA%E5%9B%A2%E7%BB%93%E8%B7%AF2528%E5%8F%B7&autoOpen=true&l=19"
+          ></iframe>
+          <div class="map-star-marker" aria-hidden="true">★</div>
+          <div class="map-star-label" aria-hidden="true">石灿酒店</div>
+          <div id="mapFallback" class="map-fallback hidden">
+            地图预览加载失败，请使用下方按钮直接打开地图导航。
+          </div>
+        </div>
+
+        <div class="map-actions">
+          <a
+            class="btn"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://uri.amap.com/marker?position=120.141489,36.062333&name=%E9%9D%92%E5%B2%9B%E7%9F%B3%E7%81%BF%E9%85%92%E5%BA%97%20%E5%B8%8C%E5%B0%94%E9%A1%BF%E6%A0%BC%E8%8A%AE%E7%B2%BE%E9%80%89&src=wedding_invite"
+            >打开高德地图</a
+          >
+          <a
+            class="btn ghost"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://map.baidu.com/?latlng=36.062333,120.141489&title=%E9%9D%92%E5%B2%9B%E7%9F%B3%E7%81%BF%E9%85%92%E5%BA%97%20%E5%B8%8C%E5%B0%94%E9%A1%BF%E6%A0%BC%E8%8A%AE%E7%B2%BE%E9%80%89&content=%E9%BB%84%E5%B2%9B%E5%8C%BA%E5%9B%A2%E7%BB%93%E8%B7%AF2528%E5%8F%B7&autoOpen=true&l=19"
+            >打开百度地图</a
+          >
+        </div>
+      </section>
+
+      <section class="card message-wall reveal" id="message-wall">
+        <h3>留言祝福</h3>
+
+        <form id="messageForm" class="message-form">
+          <label>
+            姓名（可选）
+            <input id="guestName" name="guestName" maxlength="20" placeholder="例如：李同学" />
+          </label>
+
+          <label class="full">
+            留言（2-120字）
+            <textarea
+              id="impression"
+              name="impression"
+              required
+              minlength="2"
+              maxlength="120"
+              placeholder="写下你想对新人说的话..."
+            ></textarea>
+          </label>
+
+          <button class="btn" type="submit" id="submitBtn">发送</button>
+          <p id="formHint" class="form-hint"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <p>With Love · 房乃玉 & 郑一斐</p>
+    </footer>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>
