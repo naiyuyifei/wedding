@@ -772,11 +772,11 @@ body {
 
 @media (max-width: 900px) {
   .cinema-bg {
-    background-position: 64% center !important;
+    background-position: 58% center !important;
   }
 
   .is-wechat .cinema-bg {
-    background-position: 66% center !important;
+    background-position: 60% center !important;
   }
 
   .info-grid {
@@ -803,11 +803,11 @@ body {
 
 @media (max-width: 680px) {
   .cinema-bg {
-    background-position: 72% center !important;
+    background-position: 66% center !important;
   }
 
   .is-wechat .cinema-bg {
-    background-position: 74% center !important;
+    background-position: 68% center !important;
   }
 
   .page {
